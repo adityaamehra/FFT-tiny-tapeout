@@ -36,7 +36,7 @@ module top #(parameter N = 128, parameter STAGES = 7)(
             sdf_stage #(.STAGE_ID(k), .N(N), .STAGES(STAGES)) stage_inst (
                 .clk(clk), .reset_n(reset_n),
                 .sel(master_cnt[STAGES-1-k]),
-                .twiddle_addr(((master_cnt << k) & ((N/2)-1))[STAGES-1:0]),
+                .twiddle_addr((master_cnt << k) & ((N/2)-1)),
                 .x_in_r(pipe_r[k]), .x_in_i(pipe_i[k]),
                 .y_out_r(pipe_r[k+1]), .y_out_i(pipe_i[k+1])
             );
