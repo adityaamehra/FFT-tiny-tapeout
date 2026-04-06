@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module delay_line #(parameter DEPTH = 1)(
     input  wire clk, reset_n,
     input  wire signed [7:0] in_r, in_i,

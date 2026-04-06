@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module Butterfly (
     input  wire  signed [7:0]    x0_r, x0_i,
     input  wire  signed [7:0]    x1_r, x1_i,

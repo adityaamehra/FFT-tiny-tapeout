@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-`timescale 1ns / 1ps
 `include "top.v"
 `default_nettype none
 

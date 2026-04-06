@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 `include "sdf_stage.v"
 `include "Butterfly.v"
 `include "twiddle_rom.v"

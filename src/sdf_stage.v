@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module sdf_stage #(
     parameter STAGE_ID = 0, parameter N = 128, parameter STAGES = 7,
     parameter DELAY = N >> (STAGE_ID + 1)

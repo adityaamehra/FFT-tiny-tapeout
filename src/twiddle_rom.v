@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module twiddle_rom #(
     parameter N          = 128,
     parameter ADDR_WIDTH = 6
