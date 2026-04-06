@@ -1,9 +1,3 @@
-`include "sdf_stage.v"
-`include "Butterfly.v"
-`include "twiddle_rom.v"
-`include "delay_line.v"
-`include "axi_fft_wrapper.v"
-
 module top #(parameter N = 128, parameter STAGES = 7)(
     input  wire              clk, reset_n, start,
     input  wire signed [7:0] x_in_r, x_in_i,
@@ -13,7 +7,7 @@ module top #(parameter N = 128, parameter STAGES = 7)(
     reg [STAGES-1:0] master_cnt;
     assign valid = (master_cnt == N-1) && start;
 
-    always @(posedge clk or negedge reset_n) begin
+    always @(posedge clk) begin
         if (!reset_n) begin 
             master_cnt <= 0; 
         end

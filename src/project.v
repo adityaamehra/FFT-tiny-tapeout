@@ -2,8 +2,6 @@
  * Copyright (c) 2024 UGRA IIT(BHU)
  * SPDX-License-Identifier: Apache-2.0
  */
-
-`include "top.v"
 `default_nettype none
 
 module tt_um_fft (
@@ -25,7 +23,7 @@ module tt_um_fft (
     assign x_in_r = ui_in;
 
     reg start_latch;
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n)
             start_latch <= 1'b0;
         else if (ui_in == 8'b1010_1010)
