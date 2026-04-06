@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 `default_nettype none
+`include "top.v"
+`include "axi_fft_wrapper.v"
+`include "Butterfly.v"
+`include "delay_line.v"
+`include "sdf_stage.v"
+`include "twiddle_rom.v"
 
 module tt_um_fft (
     input  wire [7:0] ui_in,
