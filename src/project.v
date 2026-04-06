@@ -1,27 +1,89 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 UGRA IIT(BHU)
  * SPDX-License-Identifier: Apache-2.0
  */
 
+`timescale 1ns / 1ps
+`include "top.v"
 `default_nettype none
 
-module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+module tt_um_fft (
+    input  wire [7:0] ui_in,
+    output wire [7:0] uo_out,
+    input  wire [7:0] uio_in,
+    output wire [7:0] uio_out,
+    output wire [7:0] uio_oe,
+    input  wire       ena,
+    input  wire       clk,
+    input  wire       rst_n
 );
+    assign uio_oe = 8'hFF;
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    wire valid;
+    wire signed [7:0] x_in_r;
+    wire signed [7:0] y_out_r, y_out_i;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    assign x_in_r = ui_in;
+
+    reg start_latch;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            start_latch <= 1'b0;
+        else if (ui_in == 8'b1010_1010)
+            start_latch <= 1'b1;
+    end
+
+    wire start;
+    assign start = start_latch || (ui_in == 8'b1010_1010);
+
+    top #(
+        .N(128),
+        .STAGES(7)
+    ) fft_inst (
+        .clk     (clk),
+        .reset_n (rst_n),
+        .start   (start),
+        .x_in_r  (x_in_r),
+        .x_in_i  (8'b0),
+        .y_out_r (y_out_r),
+        .y_out_i (y_out_i),
+        .valid   (valid)
+    );
+
+    // 2-Stage Slip Buffer for Inline Sync Byte
+    reg [7:0] slip_r, slip_i;
+    reg [7:0] final_out_r, final_out_i;
+    reg sync_flag;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            slip_r      <= 8'd0;
+            slip_i      <= 8'd0;
+            final_out_r <= 8'd0;
+            final_out_i <= 8'd0;
+            sync_flag   <= 1'b0;
+        end else begin
+            slip_r <= y_out_r;
+            slip_i <= y_out_i;
+
+            if (valid) begin
+                sync_flag   <= 1'b1;
+                final_out_r <= 8'hFF;
+                final_out_i <= 8'hFF;
+            end else if (sync_flag) begin
+                sync_flag   <= 1'b0;
+                final_out_r <= slip_r; 
+                final_out_i <= slip_i;
+            end else begin
+                final_out_r <= slip_r; 
+                final_out_i <= slip_i;
+            end
+        end
+    end
+
+    assign uo_out  = final_out_r;
+    assign uio_out = final_out_i;
+
+    wire _unused = &{uio_in, ena, 1'b0};
 
 endmodule
