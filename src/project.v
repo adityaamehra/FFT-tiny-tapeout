@@ -58,7 +58,7 @@ module tt_um_fft (
     reg [7:0] final_out_r, final_out_i;
     reg sync_flag;
 
-    always @(posedge clk or negedge rst_n) begin
+    always @(posedge clk) begin
         if (!rst_n) begin
             slip_r      <= 8'd0;
             slip_i      <= 8'd0;
