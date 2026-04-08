@@ -1,5 +1,5 @@
 module sdf_stage #(
-    parameter STAGE_ID = 0, parameter N = 128, parameter STAGES = 7,
+    parameter STAGE_ID = 0, parameter N = 64, parameter STAGES = 6,
     parameter DELAY = N >> (STAGE_ID + 1)
 )(
     input  wire              clk, reset_n, sel,

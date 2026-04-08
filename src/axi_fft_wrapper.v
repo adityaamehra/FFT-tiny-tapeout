@@ -1,4 +1,4 @@
-module axi_fft_wrapper #(parameter N = 128)(
+module axi_fft_wrapper #(parameter N = 64)(
     input  wire        aclk, aresetn, s_axis_tvalid, s_axis_tlast, m_axis_tready,
     input  wire [7:0]  s_axis_tdata,
     output wire        s_axis_tready, m_axis_tvalid, m_axis_tlast,
