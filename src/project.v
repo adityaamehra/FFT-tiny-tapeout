@@ -84,8 +84,8 @@ module tt_um_fft (
         end
     end
 
-    assign uo_out  = final_out_r;
-    assign uio_out = final_out_i;
+    assign uo_out  = ena?final_out_r:8'h00;
+    assign uio_out = ena?final_out_i:8'h00;
 
     wire _unused = &{uio_in, ena, 1'b0};
 

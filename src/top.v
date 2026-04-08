@@ -4,7 +4,7 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     output wire signed [7:0] y_out_r, y_out_i,
     output wire valid
 );
-    localparam [STAGES-1:0] CNT_MAX  = N - 1;
+    localparam [STAGES-1:0] CNT_MAX  = 6'(N - 1);
     localparam              TADDR_W  = STAGES - 1;
 
     reg [STAGES-1:0] master_cnt;
@@ -31,7 +31,7 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     generate
         for (k = 0; k < STAGES; k = k + 1) begin : sdf_pipeline
             wire [TADDR_W-1:0] taddr;
-            assign taddr = (master_cnt << k) & CNT_MAX[TADDR_W-1:0];
+            assign taddr = ((master_cnt << k) & CNT_MAX[TADDR_W-1:0])[TADDR_W-1:0];
             sdf_stage #(
                 .STAGE_ID(k),
                 .N(N),

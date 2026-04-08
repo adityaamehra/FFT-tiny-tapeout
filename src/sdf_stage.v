@@ -8,7 +8,7 @@ module sdf_stage #(
     output wire signed [7:0] y_out_r, y_out_i
 );
     wire signed [7:0] w_r, w_i;
-    twiddle_rom #(.N(N), .ADDR_WIDTH(STAGES-1)) rom_inst (
+    twiddle_rom #(.ADDR_WIDTH(STAGES-1)) rom_inst (
         .addr(twiddle_addr), .w_r(w_r), .w_i(w_i)
     );
 
