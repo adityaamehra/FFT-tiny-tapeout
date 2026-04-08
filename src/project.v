@@ -40,8 +40,8 @@ module tt_um_fft (
     assign start = start_latch || (ui_in == 8'b1010_1010);
 
     top #(
-        .N(128),
-        .STAGES(7)
+        .N(64),
+        .STAGES(6)
     ) fft_inst (
         .clk     (clk),
         .reset_n (rst_n),

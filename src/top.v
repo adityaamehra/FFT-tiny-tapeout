@@ -1,4 +1,4 @@
-module top #(parameter N = 128, parameter STAGES = 7)(
+module top #(parameter N = 64, parameter STAGES = 6)(
     input  wire              clk, reset_n, start,
     input  wire signed [7:0] x_in_r, x_in_i,
     output wire signed [7:0] y_out_r, y_out_i,

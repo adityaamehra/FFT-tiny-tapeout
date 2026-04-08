@@ -8,8 +8,8 @@ import math
 import cmath
 import logging
 
-N             = 128
-STAGES        = 7
+N             = 64
+STAGES        = 6
 OUT_BITS      = 8
 MAX_SIGNED    = (1 << (OUT_BITS - 1)) - 1
 MIN_SIGNED    = -(1 << (OUT_BITS - 1))
