@@ -1,12 +1,12 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1775728838" />
-    <testcase name="test_all_zeros" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="120" time="0.010972976684570312" sim_time_ns="13600.0" ratio_time="1239408.4477663827" />
-    <testcase name="test_dc_signal" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="135" time="0.010319709777832031" sim_time_ns="13700.0" ratio_time="1327556.713797246" />
-    <testcase name="test_impulse" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="160" time="0.012261152267456055" sim_time_ns="13700.0" ratio_time="1117350.1234759951" />
-    <testcase name="test_single_tone_sine" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="182" time="0.011859416961669922" sim_time_ns="13700.0" ratio_time="1155200.1286639057" />
-    <testcase name="test_nyquist_bin" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="207" time="0.011076688766479492" sim_time_ns="13700.0" ratio_time="1236831.7182892442" />
-    <testcase name="test_random_data" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="229" time="0.04327511787414551" sim_time_ns="41100.0" ratio_time="949737.4477298646" />
-    <testcase name="test_ena_gate" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="255" time="0.012575387954711914" sim_time_ns="20600.0" ratio_time="1638120.43606029" />
+    <property name="random_seed" value="1775729020" />
+    <testcase name="test_all_zeros" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="120" time="0.01389765739440918" sim_time_ns="13600.0" ratio_time="978582.1893602787" />
+    <testcase name="test_dc_signal" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="135" time="0.012962579727172852" sim_time_ns="13700.0" ratio_time="1056888.3886038" />
+    <testcase name="test_impulse" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="160" time="0.01362156867980957" sim_time_ns="13700.0" ratio_time="1005757.8772338228" />
+    <testcase name="test_single_tone_sine" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="182" time="0.011170387268066406" sim_time_ns="13700.0" ratio_time="1226457.0306497056" />
+    <testcase name="test_nyquist_bin" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="207" time="0.012290477752685547" sim_time_ns="13700.0" ratio_time="1114684.0892337537" />
+    <testcase name="test_random_data" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="229" time="0.04493546485900879" sim_time_ns="41100.0" ratio_time="914645.0388119253" />
+    <testcase name="test_ena_gate" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="255" time="0.013915538787841797" sim_time_ns="20600.0" ratio_time="1480359.4969674125" />
   </testsuite>
 </testsuites>
