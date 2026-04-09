@@ -24,4 +24,13 @@ module Butterfly (
     assign y0_i = sum_i[8:1];
     assign y1_r = rnd_r[14:7];
     assign y1_i = rnd_i[14:7];
+
+    // Sink intentionally truncated fixed-point bits to satisfy Verilator
+    wire _unused_bits = &{
+        1'b0,
+        sum_r[0], sum_i[0],
+        diff_r[0], diff_i[0],
+        rnd_r[15], rnd_r[6:0],
+        rnd_i[15], rnd_i[6:0]
+    };
 endmodule
