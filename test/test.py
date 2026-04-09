@@ -1,262 +1,270 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
-# SPDX-License-Identifier: Apache-2.0
+"""
+test.py  —  CocoTB testbench for tt_um_fft
+64-point, 6-stage SDF FFT on Tiny Tapeout (8-bit I/O)
+"""
 
+import math
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, RisingEdge, FallingEdge
-import math
-import cmath
-import logging
+from cocotb.triggers import RisingEdge, ClockCycles
+import numpy as np
 
+# ─────────────────────────────────────────────────────────────
+#  Constants
+# ─────────────────────────────────────────────────────────────
+CLK_PERIOD_NS = 100
 N             = 64
-STAGES        = 6
-OUT_BITS      = 8
-MAX_SIGNED    = (1 << (OUT_BITS - 1)) - 1
-MIN_SIGNED    = -(1 << (OUT_BITS - 1))
-CLK_PERIOD_NS = 10
+STAGES        = int(math.log2(N))
+START_BYTE    = 0xAA
+SYNC_BYTE     = 0xFF
+TOLERANCE_LSB = 4
+SNR_FLOOR_DB  = 5.0
 
-TRIGGER        = 0xAA
-TRIGGER_SIGNED = TRIGGER if TRIGGER < 128 else TRIGGER - 256
+# ─────────────────────────────────────────────────────────────
+#  Utility helpers
+# ─────────────────────────────────────────────────────────────
 
-SINE_BIN_A  = 10
-SINE_BIN_B  = 30
-FULL_AMP    = MAX_SIGNED - 1
-TONE_AMP    = 55
-DC_VALUE    = 32
-IMPULSE_AMP = MAX_SIGNED
+def to_signed8(raw):
+    v = int(raw) & 0xFF
+    return v - 256 if v >= 128 else v
 
-def bit_reverse(x: int, bits: int) -> int:
-    result = 0
-    for _ in range(bits):
-        result = (result << 1) | (x & 1)
-        x >>= 1
-    return result
+def bit_reverse(val, width=STAGES):
+    return int('{:0{width}b}'.format(val, width=width)[::-1], 2)
 
-def bit_reverse_order(seq):
-    n    = len(seq)
-    bits = int(round(math.log2(n)))
-    out  = [(0,0)] * n
-    for i in range(n):
-        out[bit_reverse(i, bits)] = seq[i]
-    return out
+def unwrap_bit_reverse(hw_r, hw_i):
+    """Reorders Radix-2 DIF bit-reversed hardware output to natural order."""
+    nat_r = np.zeros(N, dtype=int)
+    nat_i = np.zeros(N, dtype=int)
+    for i in range(N):
+        rev = bit_reverse(i)
+        nat_r[rev] = hw_r[i]
+        nat_i[rev] = hw_i[i]
+    return nat_r, nat_i
 
-def to_signed(val: int, bits: int) -> int:
-    val = val & ((1 << bits) - 1)
-    return val if val < (1 << (bits - 1)) else val - (1 << bits)
+def hw_reference_fft(samples):
+    x   = np.array(samples, dtype=float)
+    X   = np.fft.fft(x) / N
+    ref_r = np.clip(np.round(X.real), -128, 127).astype(int)
+    ref_i = np.clip(np.round(X.imag), -128, 127).astype(int)
+    return ref_r, ref_i
 
-def clamp(val: int, lo: int, hi: int) -> int:
-    return max(lo, min(hi, val))
+def check_spectrum(hw_r, hw_i, ref_r, ref_i, label):
+    """Validates aligned arrays point-by-point for strict error mapping."""
+    # hardware arrays must be unwrapped prior to calling this
+    err_r = np.abs(hw_r - ref_r)
+    err_i = np.abs(hw_i - ref_i)
+    
+    max_err  = float(max(np.max(err_r), np.max(err_i)))
+    
+    sig_pwr = np.mean(ref_r.astype(float)**2 + ref_i.astype(float)**2) + 1e-12
+    nse_pwr = np.mean(err_r.astype(float)**2 + err_i.astype(float)**2) + 1e-12
+    snr_db  = 10.0 * math.log10(sig_pwr / nse_pwr)
 
-def to_unsigned8(signed_val: int) -> int:
-    return clamp(signed_val, MIN_SIGNED, MAX_SIGNED) & ((1 << OUT_BITS) - 1)
+    per_bin_ok = bool(max_err <= TOLERANCE_LSB)
+    snr_ok     = snr_db >= SNR_FLOOR_DB
 
-def compute_peak_bin_reference(samples: list) -> int:
-    mags = []
-    for k in range(N):
-        val = sum(
-            samples[n] * cmath.exp(-2j * math.pi * k * n / N)
-            for n in range(N)
-        )
-        mags.append(abs(val))
-    best_k, best_v = -1, -1.0
-    for k, v in enumerate(mags):
-        if v > best_v:
-            best_k, best_v = k, v
-    return best_k
-
-def _with_trigger(data_samples: list) -> list:
-    return [TRIGGER] + data_samples[:N - 1]
-
-def make_sine_frame(bin_freq: int, amplitude: int) -> list:
-    data = [
-        to_unsigned8(int(round(amplitude * math.sin(2.0 * math.pi * bin_freq * n / N))))
-        for n in range(1, N)
-    ]
-    return _with_trigger(data)
-
-def make_two_tone_frame(bin_a: int, bin_b: int, amplitude: int) -> list:
-    data = [
-        to_unsigned8(int(round(
-            amplitude * math.sin(2.0 * math.pi * bin_a * n / N) +
-            amplitude * math.sin(2.0 * math.pi * bin_b * n / N)
-        )))
-        for n in range(1, N)
-    ]
-    return _with_trigger(data)
-
-def make_dc_frame(value: int) -> list:
-    return _with_trigger([to_unsigned8(value)] * (N - 1))
-
-def make_impulse_frame() -> list:
-    return [TRIGGER] + [0] * (N - 1)
-
-def magnitudes(results) -> list:
-    return [math.sqrt(r * r + i * i) for r, i in results]
-
-def peak_bin(mags: list) -> int:
-    best_i, best_v = -1, -1.0
-    for i, v in enumerate(mags):
-        if v > best_v:
-            best_i, best_v = i, v
-    return best_i
-
-def top_n_bins(mags: list, n: int) -> list:
-    ranked = sorted(
-        range(len(mags)),
-        key=lambda i: -mags[i]
+    cocotb.log.info(
+        f"  [{label}]  max_err={max_err:.1f} LSB  "
+        f"SNR={snr_db:.1f} dB  "
+        f"per-bin={'PASS' if per_bin_ok else 'FAIL'}  "
+        f"SNR={'PASS' if snr_ok else 'FAIL'}"
     )
-    return ranked[:n]
+    return per_bin_ok and snr_ok
 
-async def start_clock(dut):
-    dut._log.setLevel(logging.INFO)
-    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, unit="ns").start())
+# ─────────────────────────────────────────────────────────────
+#  DUT control helpers
+# ─────────────────────────────────────────────────────────────
 
 async def reset_dut(dut):
+    dut.rst_n.value  = 0
     dut.ena.value    = 1
     dut.ui_in.value  = 0
     dut.uio_in.value = 0
-    dut.rst_n.value  = 0
-    await ClockCycles(dut.clk, 10)
-    dut.rst_n.value  = 1
-
-async def send_trigger(dut):
-    await FallingEdge(dut.clk)
-    dut.ui_in.value = TRIGGER
-    await RisingEdge(dut.clk)
-
-async def feed_and_collect(dut, samples: list) -> list:
-    for idx, s in enumerate(samples):
-        await FallingEdge(dut.clk)
-        dut.ui_in.value = s
-
-    await FallingEdge(dut.clk)
-    dut.ui_in.value = 0
-
-    # Native Hardware Alignment
-    timeout = N * 4
-    for _ in range(timeout):
-        await RisingEdge(dut.clk)
-        if int(dut.uo_out.value) == 255 and int(dut.uio_out.value) == 255:
-            break
-    else:
-        raise AssertionError("Hardware SYNC (0xFF) timeout.")
-
-    raw_results = [(0, 0)] * N
-    for k in range(N):
-        await RisingEdge(dut.clk)
-        r = to_signed(int(dut.uo_out.value),  OUT_BITS)
-        i = to_signed(int(dut.uio_out.value), OUT_BITS)
-        raw_results[k] = (r, i)
-
-    return bit_reverse_order(raw_results)
-
-async def run_fft(dut, samples: list) -> list:
-    await reset_dut(dut)
-    return await feed_and_collect(dut, samples)
-
-@cocotb.test()
-async def test_fft_single_tone(dut):
-    await start_clock(dut)
-    samples = make_sine_frame(SINE_BIN_A, FULL_AMP)
-    signed_samples = [to_signed(s, OUT_BITS) for s in samples]
-    ref_peak = compute_peak_bin_reference(signed_samples)
-
-    results = await run_fft(dut, samples)
-    mags    = magnitudes(results)
-    pb      = peak_bin(mags)
-
-    valid_peaks = {ref_peak, N - ref_peak}
-    assert pb in valid_peaks, f"Peak bin mismatch: expected one of {valid_peaks}, got {pb}."
-
-@cocotb.test()
-async def test_fft_all_zeros(dut):
-    await start_clock(dut)
-    await reset_dut(dut)
-
-    for _ in range(2 * N):
-        await FallingEdge(dut.clk)
-        dut.ui_in.value = 0
-
-    nonzero = []
-    for k in range(N):
-        await RisingEdge(dut.clk)
-        uo  = to_signed(int(dut.uo_out.value),  OUT_BITS)
-        uio = to_signed(int(dut.uio_out.value), OUT_BITS)
-        if uo != 0 or uio != 0:
-            nonzero.append((k, uo, uio))
-
-    assert len(nonzero) == 0, f"Expected all-zero outputs, got {len(nonzero)} non-zero sample(s)."
-
-@cocotb.test()
-async def test_fft_dc_input(dut):
-    await start_clock(dut)
-    samples = make_dc_frame(DC_VALUE)
-    signed_samples = [to_signed(s, OUT_BITS) for s in samples]
-    ref_peak = compute_peak_bin_reference(signed_samples)
-
-    results = await run_fft(dut, samples)
-    mags    = magnitudes(results)
-    pb      = peak_bin(mags)
-
-    assert pb == ref_peak, f"DC test: expected peak at bin {ref_peak}, got bin {pb}."
-
-@cocotb.test()
-async def test_fft_multi_tone(dut):
-    await start_clock(dut)
-    samples = make_two_tone_frame(SINE_BIN_A, SINE_BIN_B, TONE_AMP)
-    signed_samples = [to_signed(s, OUT_BITS) for s in samples]
-
-    mags_ref = [
-        abs(sum(signed_samples[n] * cmath.exp(-2j * math.pi * k * n / N) for n in range(N)))
-        for k in range(N)
-    ]
-    ref_top4 = set(sorted(range(N), key=lambda k: -mags_ref[k])[:4])
-
-    results = await run_fft(dut, samples)
-    mags    = magnitudes(results)
-    top2    = set(top_n_bins(mags, 2))
-
-    assert top2.issubset(ref_top4), f"Top-2 output bins {top2} not in reference top-4 {ref_top4}."
-
-@cocotb.test()
-async def test_fft_impulse(dut):
-    await start_clock(dut)
-    samples = make_impulse_frame()
-    results = await run_fft(dut, samples)
-    mags    = magnitudes(results)
-
-    total_energy = sum(mags)
-    assert total_energy > 0, "Impulse test: total output energy is zero."
-
-    mean_mag = total_energy / N
-    max_mag  = max(mags)
-    assert max_mag <= 4.0 * mean_mag + 1.0, "Impulse spectrum not flat."
-
-@cocotb.test()
-async def test_fft_reset_during_op(dut):
-    await start_clock(dut)
-    await reset_dut(dut)
-
-    await send_trigger(dut)
-    garbage = make_sine_frame(SINE_BIN_A, FULL_AMP)[1: N // 2]
-    for s in garbage:
-        await FallingEdge(dut.clk)
-        dut.ui_in.value = s
-
-    dut.rst_n.value = 0
-    dut.ui_in.value = 0
     await ClockCycles(dut.clk, 5)
     dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 2)
 
-    await ClockCycles(dut.clk, N)
+async def send_frame(dut, samples):
+    assert len(samples) == N
+    dut.ui_in.value = START_BYTE
+    await RisingEdge(dut.clk)
 
-    samples = make_sine_frame(SINE_BIN_A, FULL_AMP)
-    signed_samples = [to_signed(s, OUT_BITS) for s in samples]
-    ref_peak = compute_peak_bin_reference(signed_samples)
+    for s in samples:
+        dut.ui_in.value = int(s) & 0xFF
+        await RisingEdge(dut.clk)
+    dut.ui_in.value = 0
 
-    results = await feed_and_collect(dut, samples)
-    mags    = magnitudes(results)
-    pb      = peak_bin(mags)
+async def collect_frame(dut, timeout=300):
+    sync_found = False
+    for _ in range(timeout):
+        await RisingEdge(dut.clk)
+        if (int(dut.uo_out.value) == SYNC_BYTE and
+                int(dut.uio_out.value) == SYNC_BYTE):
+            sync_found = True
+            break
 
-    valid_peaks = {ref_peak, N - ref_peak}
-    assert pb in valid_peaks, f"Post-reset FFT peak mismatch: expected one of {valid_peaks}, got {pb}."
+    assert sync_found, f"collect_frame: SYNC marker 0xFF/0xFF not seen within {timeout} cycles."
+
+    out_r, out_i = [], []
+    for _ in range(N):
+        await RisingEdge(dut.clk)
+        out_r.append(to_signed8(dut.uo_out.value))
+        out_i.append(to_signed8(dut.uio_out.value))
+
+    return np.array(out_r, dtype=int), np.array(out_i, dtype=int)
+
+# ─────────────────────────────────────────────────────────────
+#  Test cases
+# ─────────────────────────────────────────────────────────────
+
+@cocotb.test()
+async def test_all_zeros(dut):
+    cocotb.log.info("━━ test_all_zeros ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    await send_frame(dut, [0] * N)
+    out_r, out_i = await collect_frame(dut)
+
+    nonzero_r = int(np.count_nonzero(out_r))
+    nonzero_i = int(np.count_nonzero(out_i))
+
+    assert nonzero_r == 0 and nonzero_i == 0
+    cocotb.log.info("  PASSED")
+
+@cocotb.test()
+async def test_dc_signal(dut):
+    cocotb.log.info("━━ test_dc_signal ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    level   = 32
+    samples = [level] * N
+    ref_r, ref_i = hw_reference_fft(samples)
+
+    await send_frame(dut, samples)
+    raw_r, raw_i = await collect_frame(dut)
+    out_r, out_i = unwrap_bit_reverse(raw_r, raw_i)
+
+    hw_mag   = np.abs(out_r.astype(float) + 1j * out_i.astype(float))
+    peak_bin = int(np.argmax(hw_mag))
+    sidelobes = float(np.max(hw_mag[1:]))
+
+    assert peak_bin == 0
+    assert sidelobes <= TOLERANCE_LSB + 1
+
+    ok = check_spectrum(out_r, out_i, ref_r, ref_i, "dc_signal")
+    assert ok
+    cocotb.log.info("  PASSED")
+
+@cocotb.test()
+async def test_impulse(dut):
+    cocotb.log.info("━━ test_impulse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    samples    = [0] * N
+    samples[0] = 127
+    ref_r, ref_i = hw_reference_fft(samples)
+
+    await send_frame(dut, samples)
+    raw_r, raw_i = await collect_frame(dut)
+    out_r, out_i = unwrap_bit_reverse(raw_r, raw_i)
+
+    hw_mag  = np.abs(out_r.astype(float) + 1j * out_i.astype(float))
+    mag_std = float(np.std(hw_mag))
+    
+    assert mag_std < 3.0
+    ok = check_spectrum(out_r, out_i, ref_r, ref_i, "impulse")
+    assert ok
+    cocotb.log.info("  PASSED")
+
+@cocotb.test()
+async def test_single_tone_sine(dut):
+    cocotb.log.info("━━ test_single_tone_sine ━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    k, amp = 4, 50
+    t      = np.arange(N)
+    raw    = amp * np.sin(2 * np.pi * k * t / N)
+    samples = np.clip(np.round(raw).astype(int), -128, 127)
+
+    ref_r, ref_i = hw_reference_fft(samples.tolist())
+
+    await send_frame(dut, (samples & 0xFF).tolist())
+    raw_r, raw_i = await collect_frame(dut)
+    out_r, out_i = unwrap_bit_reverse(raw_r, raw_i)
+
+    hw_mag   = np.abs(out_r.astype(float) + 1j * out_i.astype(float))
+    peak_bin = int(np.argmax(hw_mag))
+
+    assert peak_bin in (k, N - k)
+    ok = check_spectrum(out_r, out_i, ref_r, ref_i, "single_tone_sine")
+    assert ok
+    cocotb.log.info("  PASSED")
+
+@cocotb.test()
+async def test_nyquist_bin(dut):
+    cocotb.log.info("━━ test_nyquist_bin ━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    amp     = 40
+    samples = [amp if n % 2 == 0 else -amp for n in range(N)]
+    ref_r, ref_i = hw_reference_fft(samples)
+
+    await send_frame(dut, [s & 0xFF for s in samples])
+    raw_r, raw_i = await collect_frame(dut)
+    out_r, out_i = unwrap_bit_reverse(raw_r, raw_i)
+
+    hw_mag   = np.abs(out_r.astype(float) + 1j * out_i.astype(float))
+    peak_bin = int(np.argmax(hw_mag))
+
+    assert peak_bin == N // 2
+    ok = check_spectrum(out_r, out_i, ref_r, ref_i, "nyquist_bin")
+    assert ok
+    cocotb.log.info("  PASSED")
+
+@cocotb.test()
+async def test_random_data(dut):
+    cocotb.log.info("━━ test_random_data ━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+
+    seeds = [42, 137, 2025]
+    all_ok = True
+
+    for seed in seeds:
+        await reset_dut(dut)
+
+        rng     = np.random.default_rng(seed)
+        samples = rng.integers(-64, 64, size=N, dtype=int)
+
+        ref_r, ref_i = hw_reference_fft(samples.tolist())
+
+        await send_frame(dut, (samples & 0xFF).tolist())
+        raw_r, raw_i = await collect_frame(dut)
+        out_r, out_i = unwrap_bit_reverse(raw_r, raw_i)
+
+        ok = check_spectrum(out_r, out_i, ref_r, ref_i, f"random_data[seed={seed}]")
+        all_ok = all_ok and ok
+
+    assert all_ok
+    cocotb.log.info("  PASSED  (all 3 seeds)")
+
+@cocotb.test()
+async def test_ena_gate(dut):
+    cocotb.log.info("━━ test_ena_gate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    await reset_dut(dut)
+
+    dut.ena.value = 0
+    await send_frame(dut, [64] * N)
+
+    for _ in range(N + 70):
+        await RisingEdge(dut.clk)
+        uo  = int(dut.uo_out.value)
+        uio = int(dut.uio_out.value)
+        assert uo == 0 and uio == 0
+
+    cocotb.log.info("  PASSED  (outputs gated to 0x00 while ena=0)")
