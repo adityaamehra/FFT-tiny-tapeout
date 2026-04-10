@@ -31,7 +31,7 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     generate
         for (k = 0; k < STAGES; k = k + 1) begin : sdf_pipeline
             wire [TADDR_W-1:0] taddr;
-            wire [STAGES-1:0] shifted_cnt = master_cnt << k;
+            wire [STAGES-2:0] shifted_cnt = master_cnt << k;
             assign taddr = shifted_cnt[TADDR_W-1:0] & CNT_MAX[TADDR_W-1:0];
             sdf_stage #(
                 .STAGE_ID(k),
