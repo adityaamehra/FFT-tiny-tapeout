@@ -48,6 +48,13 @@
   "PL_RESIZER_MAX_CAP_MARGIN": 20,
   "GLB_RESIZER_MAX_CAP_MARGIN": 20,
 
+  "//": "Force OpenROAD resizer to build buffer trees for primary input ports",
+  "DESIGN_REPAIR_BUFFER_INPUT_PORTS": 1,
+
+  "//": "Enforce strict physical limits during global placement and routing",
+  "MAX_FANOUT_CONSTRAINT": 16,
+  "MAX_TRANSITION_CONSTRAINT": 0.75,
+
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
