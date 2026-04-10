@@ -39,6 +39,15 @@
   "PL_RESIZER_DESIGN_OPTIMIZATIONS": 1,
   "GLB_RESIZER_DESIGN_OPTIMIZATIONS": 1,
 
+  "//": "Force synthesis of buffer trees for high-fanout non-clock nets (rst_n)",
+  "SYNTH_MAX_FANOUT": 16,
+  
+  "//": "Increase resizer target margins by 20% to preemptively prevent slew/cap degradation",
+  "PL_RESIZER_MAX_SLEW_MARGIN": 20,
+  "GLB_RESIZER_MAX_SLEW_MARGIN": 20,
+  "PL_RESIZER_MAX_CAP_MARGIN": 20,
+  "GLB_RESIZER_MAX_CAP_MARGIN": 20,
+
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
