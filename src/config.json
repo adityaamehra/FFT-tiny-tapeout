@@ -10,7 +10,7 @@
   "//": "100 ns = 10 MHz. Design has ~55 ns of positive setup slack,",
   "//": "meaning it could run ~3–4× faster. Tighten to 30 ns (33 MHz)",
   "//": "if you ever want to measure real Fmax — but 100 ns is safe for tapeout.",
-  "CLOCK_PERIOD": 100,
+  "CLOCK_PERIOD": 200,
   "CLOCK_PORT": "clk",
 
   "//": "Run CTS on rst_n as well as clk.",
@@ -64,7 +64,6 @@
   "//": "Cluster size of 8 sinks per CTS buffer — balanced for 1109 FFs.",
   "//": "Smaller = more balanced tree, bigger = fewer cells. 8 is a good",
   "//": "midpoint for this design's skew vs. area tradeoff.",
-  "CTS_SINK_CLUSTERING_SIZE": 8,
 
   "//": "Max fanout per CTS buffer. Consistent with SYNTH_MAX_FANOUT.",
   "CTS_MAX_FANOUT": 8,
@@ -104,6 +103,14 @@
   "//": "──────────────────────────────────────",
   "RUN_LINTER": 1,
   "LINTER_INCLUDE_PDK_MODELS": 1,
+
+   "PNR_SDC_FILE"     : "dir::src/constraints.sdc",
+  "SIGNOFF_SDC_FILE" : "dir::src/constraints.sdc",
+
+  "CTS_MAX_CAP"                      : 0.2,
+  "CTS_CLK_MAX_WIRE_LEN"             : 300,
+  "CTS_SINK_CLUSTERING_SIZE"         : 20,
+  "CTS_SINK_CLUSTERING_MAX_DIAMETER" : 50,
 
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS LINE !!!",
   "//": "─────────────────────────────────────────────",
