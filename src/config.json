@@ -33,7 +33,7 @@
 
   "//": "Configuration docs: https://librelane.readthedocs.io/en/latest/reference/configuration.html",
 
-  "//": "Custom constraints to resolve 196 max slew / 81 max fanout DRVs",
+"//": "Custom constraints to resolve max slew / max fanout DRVs",
   "CTS_SINK_CLUSTERING_SIZE": 8,
   "CTS_MAX_FANOUT": 8,
   "PL_RESIZER_DESIGN_OPTIMIZATIONS": 1,
@@ -51,9 +51,11 @@
   "//": "Force OpenROAD resizer to build buffer trees for primary input ports",
   "DESIGN_REPAIR_BUFFER_INPUT_PORTS": 1,
 
-  "//": "Enforce strict physical limits during global placement and routing",
-  "MAX_FANOUT_CONSTRAINT": 16,
-  "MAX_TRANSITION_CONSTRAINT": 0.75,
+  "//": "Enforce strict physical spatial limits and tight electrical bounds to sever long traces",
+  "MAX_FANOUT_CONSTRAINT": 10,
+  "MAX_TRANSITION_CONSTRAINT": 0.4,
+  "PL_RESIZER_MAX_WIRE_LENGTH": 150,
+  "GLB_RESIZER_MAX_WIRE_LENGTH": 150,
 
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
   "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
