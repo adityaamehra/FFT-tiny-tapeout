@@ -24,7 +24,8 @@
   "//": "──────────────────────────────────────",
 
   "//": "MAX_FANOUT_CONSTRAINT replaces old SYNTH_MAX_FANOUT",
-  "MAX_FANOUT_CONSTRAINT": 4,
+  "MAX_FANOUT_CONSTRAINT": 8,
+  "MAX_TRANSITION_CONSTRAINT": 5,
 
   "//": "──────────────────────────────────────",
   "//": "  PLACEMENT",
@@ -43,7 +44,7 @@
   "DESIGN_REPAIR_MAX_CAP_PCT"  : 0.1,
 
   "//": "Wire length — replaces PL_RESIZER_MAX_WIRE_LENGTH",
-  "//":"DESIGN_REPAIR_MAX_WIRE_LENGTH:50",
+  "DESIGN_REPAIR_MAX_WIRE_LENGTH" : 50,
 
   "DESIGN_REPAIR_BUFFER_INPUT_PORTS": 1,
 
@@ -67,7 +68,7 @@
   "GRT_DESIGN_REPAIR_MAX_CAP_PCT"  : 0.1,
 
   "//": "Replaces GLB_RESIZER_MAX_WIRE_LENGTH",
-  "//":"DESIGN_REPAIR_MAX_WIRE_LENGTH:50",
+  "GRT_DESIGN_REPAIR_MAX_WIRE_LENGTH" : 50,
 
   "//": "──────────────────────────────────────",
   "//": "  LINTING",
