@@ -25,6 +25,7 @@
 
   "//": "MAX_FANOUT_CONSTRAINT replaces old SYNTH_MAX_FANOUT",
   "MAX_FANOUT_CONSTRAINT": 8,
+  "MAX_TRANSITION_CONSTRAINT": 5,
 
   "//": "──────────────────────────────────────",
   "//": "  PLACEMENT",
