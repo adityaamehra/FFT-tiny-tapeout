@@ -1,8 +1,4 @@
 {
-  "//": "═══════════════════════════════════════════════════════════",
-  "//": "  tt_um_fft  —  LibreLane config  (SKY130 HD, 6×2 tile)",
-  "//": "═══════════════════════════════════════════════════════════",
-
   "//": "──────────────────────────────────────",
   "//": "  CLOCK",
   "//": "──────────────────────────────────────",
@@ -22,22 +18,13 @@
   "//": "──────────────────────────────────────",
   "//": "  SYNTHESIS",
   "//": "──────────────────────────────────────",
-
-  "//": "MAX_FANOUT_CONSTRAINT replaces old SYNTH_MAX_FANOUT",
   "MAX_FANOUT_CONSTRAINT": 8,
-  "//": "MAX_TRANSITION_CONSTRAINT:5",
 
   "//": "──────────────────────────────────────",
   "//": "  PLACEMENT",
   "//": "──────────────────────────────────────",
   "PL_TARGET_DENSITY_PCT": 60,
-
-  "//": "RUN_POST_GPL_DESIGN_REPAIR replaces PL_RESIZER_DESIGN_OPTIMIZATIONS",
   "RUN_POST_GPL_DESIGN_REPAIR": 1,
-
-  "//": "Hold slack margins",
-  "//":"DESIGN_REPAIR_HOLD_SLACK_MARGIN: 0.20",
-  "//":"GRT_DESIGN_REPAIR_HOLD_SLACK_MARGIN : 0.15",
 
   "//": "Slew and cap margins — replaces PL_RESIZER_MAX_SLEW/CAP_MARGIN",
   "DESIGN_REPAIR_MAX_SLEW_PCT" : 30,
@@ -51,7 +38,6 @@
   "//": "──────────────────────────────────────",
   "//": "  CLOCK TREE SYNTHESIS",
   "//": "──────────────────────────────────────",
-  "RUN_CTS": 1,
   "CTS_MAX_CAP"                      : 0.2,
   "CTS_SINK_CLUSTERING_SIZE"         : 20,
   "CTS_SINK_CLUSTERING_MAX_DIAMETER" : 50,
@@ -76,41 +62,42 @@
   "RUN_LINTER"              : 1,
   "LINTER_INCLUDE_PDK_MODELS": 1,
 
-  "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS LINE !!!",
-  "//": "─────────────────────────────────────────────",
+  "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+  "//": "!!! DO NOT CHANGE ANYTHING BELOW THIS POINT !!!",
+  "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
 
-  "//": "Skip KLayout DRC/XOR (Magic DRC is the TT signoff check)",
+  "//": "Save some time",
   "RUN_KLAYOUT_XOR": 0,
   "RUN_KLAYOUT_DRC": 0,
 
-  "//": "Don't buffer outputs (TT does this at the top level)",
+  "//": "Don't put clock buffers on the outputs",
   "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": 0,
 
-  "//": "Tile margin multipliers (TT 6×2 standard)",
-  "TOP_MARGIN_MULT"   : 1,
+  "//": "Reduce wasted space",
+  "TOP_MARGIN_MULT": 1,
   "BOTTOM_MARGIN_MULT": 1,
-  "LEFT_MARGIN_MULT"  : 6,
-  "RIGHT_MARGIN_MULT" : 6,
+  "LEFT_MARGIN_MULT": 6,
+  "RIGHT_MARGIN_MULT": 6,
 
-  "//": "Absolute die sizing (TT provides the DEF template)",
+  "//": "Absolute die size",
   "FP_SIZING": "absolute",
 
-  "//": "Allow global routing congestion (required for dense TT tiles)",
   "GRT_ALLOW_CONGESTION": 1,
 
-  "//": "IO pin lengths — replaces FP_IO_HLENGTH / FP_IO_VLENGTH",
-  "IO_PIN_H_LENGTH": 2,
-  "IO_PIN_V_LENGTH": 2,
+  "FP_IO_HLENGTH": 2,
+  "FP_IO_VLENGTH": 2,
 
-  "//": "PDN vertical pitch — replaces FP_PDN_VPITCH",
-  "PDN_VPITCH": 38.87,
+  "FP_PDN_VPITCH": 38.87,
 
-  "//": "No power rings — replaces FP_PDN_MULTILAYER",
-  "PDN_MULTILAYER": 0,
+  "//": "Clock",
+  "RUN_CTS": 1,
 
-  "//": "Suppress Magic DEF label issues that break LVS",
+  "//": "Don't generate power rings",
+  "FP_PDN_MULTILAYER": 0,
+
+  "//": "MAGIC_DEF_LABELS may cause issues with LVS",
   "MAGIC_DEF_LABELS": 0,
 
-  "//": "LEF export: pin geometry only, no connected net geometry",
+  "//": "Only export pin area in LEF (without any connected nets)",
   "MAGIC_WRITE_LEF_PINONLY": 1
 }

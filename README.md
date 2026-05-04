@@ -34,7 +34,7 @@ The pipeline is governed by a 128-cycle state machine, separating ingestion from
 5.  **Halt:** At cycle 128, `running` deasserts. The system awaits the next `0xAA` trigger.
 
 ## Module Hierarchy
-* `project.v` (`tt_um_fft`): Top-level wrapper. Contains the 128-cycle control state machine, zero-forcing logic during the flush phase, and the slip-buffer for sync marker emission.
+* `project.v` (`tt_um_fft_adityaamehra`): Top-level wrapper. Contains the 128-cycle control state machine, zero-forcing logic during the flush phase, and the slip-buffer for sync marker emission.
 * `top.v`: Iteratively generates the 6 `sdf_stage` modules and manages the master control counter for stage synchronization.
 * `sdf_stage.v`: The core structural unit. Instantiates the twiddle ROM, delay line, and butterfly unit. Routes data through the delay line or butterfly based on the stage-specific timing bit derived from the master counter.
 * `delay_line.v`: Shift register matrix. Depth varies per stage ($32, 16, 8, 4, 2, 1$).

@@ -1,5 +1,5 @@
 """
-test.py  —  CocoTB testbench for tt_um_fft
+test.py  —  CocoTB testbench for tt_um_fft_adityaamehra
 64-point, 6-stage SDF FFT on Tiny Tapeout (8-bit I/O)
 """
 
