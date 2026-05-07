@@ -23,7 +23,7 @@
   "//": "──────────────────────────────────────",
   "//": "  PLACEMENT",
   "//": "──────────────────────────────────────",
-  "PL_TARGET_DENSITY_PCT": 60,
+  "PL_TARGET_DENSITY_PCT": 40,
   "RUN_POST_GPL_DESIGN_REPAIR": 1,
 
   "//": "Slew and cap margins — replaces PL_RESIZER_MAX_SLEW/CAP_MARGIN",
