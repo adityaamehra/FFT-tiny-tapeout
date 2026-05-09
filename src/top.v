@@ -27,13 +27,13 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     assign y_out_r = pipe_r[STAGES];
     assign y_out_i = pipe_i[STAGES];
 
+    wire [TADDR_W-1:0] master_cnt_trunc = master_cnt[TADDR_W-1:0];
+
     genvar k;
     generate
         for (k = 0; k < STAGES; k = k + 1) begin : sdf_pipeline
             wire [TADDR_W-1:0] taddr;
-            wire [STAGES-1:0]mid=master_cnt<<k;
-            wire [STAGES-2:0] shifted_cnt = mid[STAGES-2:0];
-            assign taddr = shifted_cnt[TADDR_W-1:0] & CNT_MAX[TADDR_W-1:0];
+            assign taddr = (master_cnt_trunc << k) & CNT_MAX[TADDR_W-1:0];
             sdf_stage #(
                 .STAGE_ID(k),
                 .N(N),
