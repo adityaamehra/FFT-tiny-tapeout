@@ -10,7 +10,6 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     reg [STAGES-1:0] master_cnt;
 
     assign valid = (master_cnt == CNT_MAX) && start;
-    wire mid[STAGES-1:0];
 
     always @(posedge clk) begin
         if (!reset_n)
@@ -32,8 +31,8 @@ module top #(parameter N = 64, parameter STAGES = 6)(
     generate
         for (k = 0; k < STAGES; k = k + 1) begin : sdf_pipeline
             wire [TADDR_W-1:0] taddr;
-            mid=master_cnt<<k;
-            wire [STAGES-2:0] shifted_cnt = mid[STAGES-1:1];
+            wire [STAGES-1:0]mid=master_cnt<<k;
+            wire [STAGES-2:0] shifted_cnt = mid[STAGES-2:0];
             assign taddr = shifted_cnt[TADDR_W-1:0] & CNT_MAX[TADDR_W-1:0];
             sdf_stage #(
                 .STAGE_ID(k),
