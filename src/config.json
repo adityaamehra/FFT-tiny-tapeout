@@ -12,8 +12,8 @@
   "//": "──────────────────────────────────────",
   "//": "  SDC CONSTRAINTS",
   "//": "──────────────────────────────────────",
-  "PNR_SDC_FILE"     : "dir::constraints.sdc",
-  "SIGNOFF_SDC_FILE" : "dir::constraints.sdc",
+  "//":"PNR_SDC_FILE     : dir::constraints.sdc,",
+  "//":"SIGNOFF_SDC_FILE : dir::constraints.sdc,",
 
   "//": "──────────────────────────────────────",
   "//": "  SYNTHESIS",
