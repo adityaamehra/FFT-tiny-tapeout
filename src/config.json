@@ -39,8 +39,6 @@
   "//": "  CLOCK TREE SYNTHESIS",
   "//": "──────────────────────────────────────",
   "CTS_MAX_CAP"                      : 0.2,
-  "CTS_SINK_CLUSTERING_SIZE"         : 20,
-  "CTS_SINK_CLUSTERING_MAX_DIAMETER" : 50,
 
   "//": "──────────────────────────────────────",
   "//": "  GLOBAL ROUTING / RESIZER",
@@ -67,8 +65,8 @@
   "//": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
 
   "//": "Save some time",
-  "RUN_KLAYOUT_XOR": 1,
-  "RUN_KLAYOUT_DRC": 1,
+  "RUN_KLAYOUT_XOR": 0,
+  "RUN_KLAYOUT_DRC": 0,
 
   "//": "Don't put clock buffers on the outputs",
   "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": 0,

@@ -9,12 +9,12 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-This is a SDF algorithm FFT IC , with 7 stages and takes 128 samples
+This is a SDF algorithm FFT IC , with 6 stages and takes 64 samples
 
 ## How to test
 
-So there is a starting bit with is 8'b10101010 , it symbolises the starting of the samples and then the output will start flowing it , before the first output all the output pins go high and only after that we start receiving 128 samples
+So there is a starting bit with is 8'b10101010 , it symbolises the starting of the samples and then the output will start flowing it , before the first output all the output pins go high and only after that we start receiving 64 samples as the outputs.
 
 ## External hardware
 
-There will be a heavy dependence on the external hardware like Field Programmable Gate Arrays as a peripheral computer to manage things.
+There will be a heavy dependence on the external hardware like Field Programmable Gate Arrays as a peripheral computer to manage things , and send the data into the IC.
