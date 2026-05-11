@@ -1,12 +1,38 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1778344900" />
-    <testcase name="test_all_zeros" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="120" time="0.009989500045776367" sim_time_ns="13600.0" ratio_time="1361429.4947373446" />
-    <testcase name="test_dc_signal" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="135" time="0.010102987289428711" sim_time_ns="13700.0" ratio_time="1356034.5675516224" />
-    <testcase name="test_impulse" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="160" time="0.01106715202331543" sim_time_ns="13700.0" ratio_time="1237897.5161033198" />
-    <testcase name="test_single_tone_sine" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="182" time="0.01159214973449707" sim_time_ns="13700.0" ratio_time="1181834.2855967586" />
-    <testcase name="test_nyquist_bin" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="207" time="0.010547637939453125" sim_time_ns="13700.0" ratio_time="1298869.0054249547" />
-    <testcase name="test_random_data" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="229" time="0.0434110164642334" sim_time_ns="41100.0" ratio_time="946764.285831974" />
-    <testcase name="test_ena_gate" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="255" time="0.01207876205444336" sim_time_ns="20600.0" ratio_time="1705472.7882831313" />
+    <property name="random_seed" value="1778486715" />
+    <testcase name="test_all_zeros" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="129" time="0.010074377059936523" sim_time_ns="13600.0" ratio_time="1349959.3988877055" />
+    <testcase name="test_dc_signal" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="140" time="0.009540557861328125" sim_time_ns="13700.0" ratio_time="1435974.7301079568" />
+    <testcase name="test_dc_max_positive" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="157" time="0.009092092514038086" sim_time_ns="13700.0" ratio_time="1506803.849482103" />
+    <testcase name="test_dc_max_negative" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="173" time="0.008673429489135742" sim_time_ns="13700.0" ratio_time="1579536.6777536492" />
+    <testcase name="test_impulse" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="187" time="0.010812520980834961" sim_time_ns="13700.0" ratio_time="1267049.5645079492" />
+    <testcase name="test_single_tone" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="203" time="0.010799884796142578" sim_time_ns="13700.0" ratio_time="1268532.0499801317" />
+    <testcase name="test_two_tone" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="221" time="0.012468814849853516" sim_time_ns="13700.0" ratio_time="1098741.1526253393" />
+    <testcase name="test_nyquist_bin" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="243" time="0.01117849349975586" sim_time_ns="13700.0" ratio_time="1225567.6491916564" />
+    <testcase name="test_random_data" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="259" time="0.06958985328674316" sim_time_ns="68500.0" ratio_time="984338.9052387788" />
+    <testcase name="test_fsm_does_not_arm_without_ena" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="281" time="0.017682313919067383" sim_time_ns="36000.0" ratio_time="2035932.636688465" />
+    <testcase name="test_fsm_arms_only_after_ena_high" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="308" time="0.012588739395141602" sim_time_ns="21200.0" ratio_time="1684044.7112744076" />
+    <testcase name="test_repeated_0xaa_with_ena_low" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="341" time="0.014302492141723633" sim_time_ns="27900.0" ratio_time="1950708.9899814967" />
+    <testcase name="test_ena_low_mid_frame_fsm_continues" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="361" time="0.017993927001953125" sim_time_ns="28100.0" ratio_time="1561637.990248039" />
+    <testcase name="test_ena_deassert_before_sync" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="403" time="0.009299278259277344" sim_time_ns="15600.0" ratio_time="1677549.5436365502" />
+    <testcase name="test_ena_output_gate_active" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="440" time="0.007237911224365234" sim_time_ns="15100.0" ratio_time="2086237.2488306214" />
+    <testcase name="test_ena_output_mux_is_combinatorial" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="451" time="0.004970073699951172" sim_time_ns="7600.0" ratio_time="1529152.3745562697" />
+    <testcase name="test_ena_restore_correct_output" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="496" time="0.013214349746704102" sim_time_ns="22800.0" ratio_time="1725397.044654939" />
+    <testcase name="test_ena_toggle_rapid" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="521" time="0.006519794464111328" sim_time_ns="10700.0" ratio_time="1641156.0301323778" />
+    <testcase name="test_reset_clears_all_state" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="548" time="0.0014133453369140625" sim_time_ns="2700.0" ratio_time="1910361.133603239" />
+    <testcase name="test_reset_during_rst_outputs_zero" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="557" time="0.0009562969207763672" sim_time_ns="1700.0" ratio_time="1777690.5509847917" />
+    <testcase name="test_reset_short_pulse" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="572" time="0.009162664413452148" sim_time_ns="13300.0" ratio_time="1451542.8482214878" />
+    <testcase name="test_reset_mid_frame" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="592" time="0.011734962463378906" sim_time_ns="17500.0" ratio_time="1491270.2153596098" />
+    <testcase name="test_reset_during_flush" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="623" time="0.015465497970581055" sim_time_ns="24100.0" ratio_time="1558307.4043812724" />
+    <testcase name="test_multiple_resets" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="645" time="0.010261297225952148" sim_time_ns="16000.0" ratio_time="1559257.0459350822" />
+    <testcase name="test_reset_with_ena_low" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="661" time="0.009760856628417969" sim_time_ns="13700.0" ratio_time="1403565.3346360528" />
+    <testcase name="test_back_to_back_frames" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="693" time="0.02945399284362793" sim_time_ns="39700.0" ratio_time="1347864.7941135997" />
+    <testcase name="test_multi_frame_determinism" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="714" time="0.027372360229492188" sim_time_ns="26700.0" ratio_time="975436.5270712842" />
+    <testcase name="test_start_byte_in_payload_ignored" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="734" time="0.010230779647827148" sim_time_ns="13700.0" ratio_time="1339096.380881359" />
+    <testcase name="test_no_trigger_no_output" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="764" time="0.013014793395996094" sim_time_ns="25700.0" ratio_time="1974675.9873964975" />
+    <testcase name="test_sync_marker_appears_exactly_once" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="779" time="0.012544870376586914" sim_time_ns="21600.0" ratio_time="1721819.3055476367" />
+    <testcase name="test_uio_oe_always_0xff" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="797" time="0.0017447471618652344" sim_time_ns="2800.0" ratio_time="1604817.053839847" />
+    <testcase name="test_pipeline_flush_masking" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="829" time="0.018204212188720703" sim_time_ns="27300.0" ratio_time="1499652.921916337" />
+    <testcase name="test_ena_and_reset_simultaneous" classname="test" file="/workspaces/FFT-tiny-tapeout/test/test.py" lineno="864" time="0.008518457412719727" sim_time_ns="13700.0" ratio_time="1608272.4061686585" />
   </testsuite>
 </testsuites>

@@ -33,7 +33,7 @@ module tt_um_fft_adityaamehra (
             running   <= 1'b0;
             frame_cnt <= 7'd0;
         end else begin
-            if (!running && ui_in == 8'hAA) begin
+            if (!running && ena && ui_in == 8'hAA) begin
                 running   <= 1'b1;
                 frame_cnt <= 7'd0;
             end else if (running) begin
@@ -86,8 +86,8 @@ module tt_um_fft_adityaamehra (
 
             if (sync_trigger) begin
                 sync_flag   <= 1'b1;
-                final_out_r <= 8'hFF;
-                final_out_i <= 8'hFF;
+                final_out_r <= 8'hAA;
+                final_out_i <= 8'hAA;
             end else if (sync_flag) begin
                 sync_flag   <= 1'b0;
                 final_out_r <= slip_r; 
@@ -99,8 +99,8 @@ module tt_um_fft_adityaamehra (
         end
     end
 
-    assign uo_out  = ena ? final_out_r : 8'h00;
-    assign uio_out = ena ? final_out_i : 8'h00;
+    assign uo_out  = ena ? final_out_r:0;
+    assign uio_out = ena ? final_out_i:0;
 
     wire _unused = &{uio_in, 1'b0};
 
