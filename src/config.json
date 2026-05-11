@@ -39,6 +39,8 @@
   "//": "  CLOCK TREE SYNTHESIS",
   "//": "──────────────────────────────────────",
   "CTS_MAX_CAP"                      : 0.2,
+  "CTS_SINK_CLUSTERING_SIZE"         : 20,
+  "CTS_SINK_CLUSTERING_MAX_DIAMETER" : 50,
 
   "//": "──────────────────────────────────────",
   "//": "  GLOBAL ROUTING / RESIZER",
