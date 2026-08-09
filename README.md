@@ -41,7 +41,7 @@ The pipeline is governed by a 128-cycle state machine, separating ingestion from
 * `Butterfly.v`: Radix-2 DIF arithmetic core. Computes sum $A+B$ and product $(A-B) \cdot W$. Contains intermediate bit-growth registers (16-bit) and applies $+0.5$ LSB convergent rounding prior to final 8-bit truncation.
 * `twiddle_rom.v`: Asynchronous lookup table storing 32 pre-computed phase factors ($W_{64}^{0...31}$). Maps 5-bit input addresses to 8-bit signed real/imaginary coefficients.
 
-## Testbench Metrics (CocoTB)
+## Testbench Metrics ( CocoTB )
 The `test.py` suite validates the physical design against an unquantized `numpy.fft.fft` floating-point reference.
 
 * **Inputs Tested:** DC, unit impulse, single-tone sine, single-tone cosine, Nyquist frequency, pseudo-random noise.
